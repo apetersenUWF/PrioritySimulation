@@ -1,15 +1,25 @@
 #include "customer.hpp"
-  Customer() {
+  Customer::Customer() {
     arrivalTime = -1;
     startOfServiceTime = -1;
-    deparatureTime = -1;
+    departureTime = -1;
     pqTime = -1;
+    next = nullptr;
   }
-  void setAT(float AT) {arrivalTime = AT;}
-  void setSOST(float SOST); {startOfServiceTime = SOST;}
-  void setDT(float DT) {departureTime = DT;}
-  void setPQT(float PQT); {pqTime = PQT;}
-  float getAT() const {return arrivalTime;}
-  float getSOST() const {return startOfServiceTime;}
-  float getDT() const {return departureTime;}
-  float getPQT() const {return pqTime;}
+  Customer::Customer(const Customer& rhs) {
+    arrivalTime = rhs.getAT();
+    startOfServiceTime = rhs.getSOST();
+    departureTime = rhs.getDT();
+    pqTime = rhs.getPQT();
+    next = rhs.getNext();
+  }
+  void Customer::setAT(float AT) {arrivalTime = AT;}
+  void Customer::setSOST(float SOST) {startOfServiceTime = SOST;}
+  void Customer::setDT(float DT) {departureTime = DT;}
+  void Customer::setPQT(float PQT) {pqTime = PQT;}
+  void Customer::setNext(Customer* next) {this->next = next;}
+  float Customer::getAT() const {return arrivalTime;}
+  float Customer::getSOST() const {return startOfServiceTime;}
+  float Customer::getDT() const {return departureTime;}
+  float Customer::getPQT() const {return pqTime;}
+  Customer* Customer::getNext() const {return next;}
