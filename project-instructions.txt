@@ -3,20 +3,15 @@ Programming Project 2
 A Queue Simulation
 Programming Problem Statement
 
-
-
 The purpose of this assignment is to explore several ideas:
 
 Event-driven programming.
 Modeling and simulation
 Continuous and discrete probability distributions
  
-
 Event-driven programming is a fundamental model of computation in which the program responds to events in certain ways. The idea of real-time 
 programming is a special type of event-driven programming in which there are absolute (computable) upper limits on the amount of time the 
 program can take to respond to events.
-
- 
 
 For our problem, we will assume that we have been hired by a local company to consider the throughput for a new service center that may have a 
 varying number (let's call it M) of service channels. We will simulate customers passing through this system by using BOTH a priority queue 
@@ -27,13 +22,9 @@ distribution called a negative exponential distribution (which we will use) whic
 numbers , will yield an appropriate average time. For instance, if average arrivals are 3 per time unit (which we will NOT specify, could be 
 milli-seconds, seconds, or hours), the average of all the time intervals would be .333.
 
- 
-
 The author of our recommended text points out that we can build simulations with an entry for each time point. However, if we use this 
 approach and we want a more fine-grained time scale, the number of events to process could potentially grow very rapidly. For instance, 
 if the current time unit is 1 sec and we want 1 msec time units instead, our input size would grow by 1000!
-
- 
 
 An alternative is to use a priority queue prioritized by the time of the events in the simulation. At any point in the simulation, the next 
 event will be either:
@@ -42,13 +33,10 @@ a customer arrives for service (an arrival event)
 
 a customer's service is complete (a departure event)
 
- 
-
 Upon arrival, we check for an available service channel. If one exists, the customer immediately commences service. We compute a completion 
 time, and that time goes into the priority queue as a future event. If all service channels are in use, the customer goes into the FIFO queue 
 to wait for a server to become available. We know the time the customer leaves the FIFO queue to get service because that is exactly the time 
 when service was completed for the prior customer (the simulation just processed a departure event).
-
 
 Note: You will need a priority queue. You must implement a heap as described in class. You are NOT to use FIFO queue you implement with 
 modified insert() to maintain priority or the STL version of priority_queue.
@@ -56,8 +44,6 @@ modified insert() to maintain priority or the STL version of priority_queue.
 Computing Arrival and Service Time Intervals – These times will be modeled by a negative exponential distribution. The following pseudocode 
 contains an algorithm for computing a time interval between events with random distribution from an infinite population given the average 
 number of events (avg) per unit time:
-
- 
 
      GetNextRandomInterval(avg)
 
@@ -67,37 +53,23 @@ number of events (avg) per unit time:
 
      return intervalTime
 
- 
-
 Note that the parameter (avg) could be either the average number of arrivals (lambda) or the average number of customers that can be 
 provided service (mu) in unit time. That is why it is generically named avg.
-
 
 Program Execution
 Your simulation will NOT be interactive. Your program should read and process two files, each holding values for lambda, mu, M, and the 
 number of events to simulate :
 
 test1.txt will contain:
-
 2
-
 3
-
 2
-
 5000
-
 test2.txt will contain:
-
 5
-
 6
-
 4
-
 5000
-
-
 
 You will keep the priority queue small, of length 200. So long as more arrivals remain, you can easily add arrivals in O(lgn) time. 
 You will do so when the number of events (arrivals and departures) in the PQ gets to M+1. You will carry out the simulation by placing the 
@@ -107,70 +79,38 @@ and note that the server is busy. If no servers are available, the customer goes
 The departure frees a server that can process the next arrival OR a customer waiting in the FIFO queue. You must tally statistics as 
 customers' service is completed. These are the amount of time waiting for service and the amount of time actually getting service.
 
-
 An Analytical Model of typical Queue measures
 
 There is a convenient set of formulas that will give you the results you would expect to see over the long run in the simulation.
 Your computer modeling will vary to some degree from the data points provided by these equations since the equations are based on large
 populations.
 
- 
-
 1.   The percent idle time, Po; that is, the percentage of time that no one is in the system:
 
 Po graphic here
 
-
 2. The average number of people in the system (the number in line plus the number being served.
-
-
-
- 
 
 3. The average time a customer spends in the system.  (the time the customer spent in line plus the time spent getting service):
 
- 
-
-
-
- 
-
 4. The average numbers of customers in the queue:
-
- 
-
- 
-
- 
 
 5.   The average time a customer spends waiting in the queue:
 
-
-
 6.  The utilization factor for the system, (rho); that is, the proportion of the system's resources which is used by the traffic which arrives.
 
-
-
 When your program runs, you will compute and display all six values from the Analytical Model.
-
-
 
 Simulation Measures to compute
 
 From your simulation, you are to determine simulated values for items determined analytically by formulas 1, 3, 5, and 6. Additionally, you 
 will report the probability of having to wait for service (the number of customers who had to wait/total customers).
 
-
-
 To get the simulated value of Po, accumulate all the time after a departure of the last customer being served (leaving no one in the system) 
 until the next arrival. To simulate rho, compute the total time servers were available (M * total simulation time) and divide it into the total amount of service time.
 
-
-
 Your output (to the console) will display the analytical model and simulation measures in such a way that you can compare them so that you can 
 see how well your simulation results matched predicted values.
-
-
 
 Example input and results:
 
@@ -180,20 +120,15 @@ lambda (l) = 2
 mu (m) = 3
 M = 2
 
-
 Po = 0.5
 L = 0.75
 W = 0.375
 Lq = 0.083
 Wq = 0.0417
 
-
-
 Output
 
 All output will be to the console. You will display all the measures in the analytical model and the specified measures from the simulation.
-
-
 
 Deliverables:
 You must include the following in your submission to the dropbox:
@@ -204,7 +139,6 @@ Source code
 The two specified input files test1.txt and test2.txt
 A makefile
  
-
 Submission Requirements:  
 Note: you will lose 10% if you do not follow these instructions exactly. The reason for this policy is that Canvas puts zip files inside zip 
 files and it is a time-consuming, tedious, and error-prone policy to unzip them all one-by-one. I have a utility I wrote that nicely unzips 
@@ -226,6 +160,4 @@ Your zip file should be named exactly like the single folder inside it but with 
 
 5. Click the "Submit Assignment" button.
 6. Use the "Choose File" capability to select and upload your .zip file.
-Please review the policy on ACADEMIC MISCONDUCT. This is an individual assignment.
-
- 
+Please review the policy on ACADEMIC MISCONDUCT. This is an individual assignment. 

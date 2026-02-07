@@ -7,20 +7,19 @@
     Customer* curr = front;
     if (curr != nullptr) {//if front isnt nullptr, assign its next node as the new front
       delete front;
-      front = curr->next;
+      front = curr->getNext();
     }
     if (front == nullptr) back = front;//if front is now nullptr or if it was an empty list, it was the only node, also reassign back
   }
   Customer* Queue::peek() const {return front;}
 
-  void Queue::insert(const Customer& customerToInsert) {
-    Customer* curr = new Customer(customerToInsert);
+  void Queue::insert(Customer* customerToInsert) {
     if (isEmpty()) {
-      front = back = curr;
+      front = back = customerToInsert;
       return;
     }
-      back->setNext(curr);
-      back = curr;
+      back->setNext(customerToInsert);
+      back = customerToInsert;
   }
   bool Queue::isEmpty() const {
     if (front == nullptr) return true;

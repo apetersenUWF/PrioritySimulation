@@ -9,6 +9,8 @@ class Customer{
   public:
   Customer();
   Customer(const Customer& rhs);
+  void operator=(Customer* rhs);
+
   void setAT(float AT);
   void setSOST(float SOST);
   void setDT(float DT);

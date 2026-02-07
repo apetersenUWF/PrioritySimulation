@@ -1,6 +1,8 @@
 #include <cmath>
 #include <random>
-float getRandomFloat(const float a = 0.0, const float b = 1.0) {
+const float RANDOM_FLOAT_LB = 0.0;
+const float RANDOM_FLOAT_UB = 1.0;
+float getRandomFloat(const float a = RANDOM_FLOAT_LB, const float b = RANDOM_FLOAT_UB) {
   std::random_device randomDevice;
   std::mt19937 generator(randomDevice());//uses the mersene twister engine for fast random numbers
   std::uniform_real_distribution<> distr(a, b);//defines the range from (a,b])

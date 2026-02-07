@@ -13,6 +13,13 @@
     pqTime = rhs.getPQT();
     next = rhs.getNext();
   }
+  void Customer::operator=(Customer* rhs) {
+    this->arrivalTime = rhs->getAT();
+    this->startOfServiceTime = rhs->getSOST();
+    this->departureTime = rhs->getDT();
+    this->pqTime = rhs->getPQT();
+    this->next = rhs->getNext();
+  }
   void Customer::setAT(float AT) {arrivalTime = AT;}
   void Customer::setSOST(float SOST) {startOfServiceTime = SOST;}
   void Customer::setDT(float DT) {departureTime = DT;}
