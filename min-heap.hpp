@@ -16,6 +16,7 @@ class MinHeap{
   public:
   MinHeap();
   MinHeap(int capacity);
+  ~MinHeap();
   void insert(Customer* customerToInsert);
   void serve();
   bool isEmpty() const;

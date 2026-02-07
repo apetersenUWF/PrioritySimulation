@@ -7,6 +7,7 @@ class Queue{
   public:
   Queue();
   Queue(Customer* customer);
+  ~Queue();
   void pop();
   Customer* peek() const;
   void insert(Customer* customerToInsert);

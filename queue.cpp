@@ -2,7 +2,13 @@
 
   Queue::Queue(): front(nullptr), back(nullptr) {}
   Queue::Queue(Customer* customer): front(customer), back(customer) {}
-
+  Queue::~Queue() {
+    while (front) {
+      Customer* curr = front->getNext();
+      delete front;
+      front = curr;
+    }
+  }
   void Queue::pop() {
     Customer* curr = front;
     if (curr != nullptr) {//if front isnt nullptr, assign its next node as the new front
