@@ -1,15 +1,15 @@
 #include <iostream>
-#include "min-heap.hpp"
-#include "queue.hpp"
-#include "stats.cpp"
+#include "sim.hpp"
 using namespace std;
-int test();
+int testQueues();
+void testSim();
 int main() {
-  cout << test();
+  //cout << testQueues();
+  testSim();
   return 0;
 }
 
-int test() {
+int testQueues() {
   Queue* fifo = new Queue();
   MinHeap* minHeap = new MinHeap();
   const int tests_count = 100;
@@ -49,4 +49,14 @@ int test() {
   if (!fifo->isEmpty()) return -5;
   cout << "SUCCESS" << endl;
   return 100;
+}
+void testSim() {
+  Simulator* sim1 = new Simulator();
+  Simulator* sim2 = new Simulator();
+  sim1->load(FILE1);
+  sim2->load(FILE2);
+  sim1->print();
+  sim2->print();
+  delete sim1;
+  delete sim2;
 }
