@@ -8,7 +8,7 @@ class Queue{
   Queue();
   Queue(Customer* customer);
   ~Queue();
-  void pop();
+  Customer* pop();
   Customer* peek() const;
   void insert(Customer* customerToInsert);
   bool isEmpty() const;

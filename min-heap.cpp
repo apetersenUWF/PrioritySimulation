@@ -1,4 +1,5 @@
 #include "min-heap.hpp"
+#include <iostream>
   MinHeap::MinHeap(){
     size = 1;
     capacity = DEFAULT_MINHEAP_CAPACITY;
@@ -24,12 +25,14 @@
     size++;
   }
 
-  void MinHeap::serve() {
-    if (size == 1) return;//PQ empty
+  Customer* MinHeap::serve() {
+    if (size == 1) return nullptr;//PQ empty
+    Customer* servedCustomer = new Customer(priorityQueue.at(1));//saves the customer pointer for returning
     delete priorityQueue.at(1);
     priorityQueue.at(1) = priorityQueue.at(size-1);
     size--;
     percolateDown(1);
+    return servedCustomer;
   }
 
   void MinHeap::percolateUp(int index) {

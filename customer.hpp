@@ -8,7 +8,7 @@ class Customer{
   Customer* next;
   public:
   Customer();
-  Customer(const Customer& rhs);
+  Customer(const Customer* rhs);
   void operator=(Customer* rhs);
 
   void setAT(float AT);

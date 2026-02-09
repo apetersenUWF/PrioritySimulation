@@ -6,12 +6,12 @@
     pqTime = -1;
     next = nullptr;
   }
-  Customer::Customer(const Customer& rhs) {
-    arrivalTime = rhs.getAT();
-    startOfServiceTime = rhs.getSOST();
-    departureTime = rhs.getDT();
-    pqTime = rhs.getPQT();
-    next = rhs.getNext();
+  Customer::Customer(const Customer* rhs) {
+    arrivalTime = rhs->getAT();
+    startOfServiceTime = rhs->getSOST();
+    departureTime = rhs->getDT();
+    pqTime = rhs->getPQT();
+    next = rhs->getNext();
   }
   void Customer::operator=(Customer* rhs) {
     this->arrivalTime = rhs->getAT();
