@@ -1,4 +1,5 @@
 #include "customer.hpp"
+#include <iostream>
   Customer::Customer() {
     arrivalTime = -1;
     startOfServiceTime = -1;
@@ -13,6 +14,14 @@
     pqTime = rhs->getPQT();
     next = rhs->getNext();
   }
+  Customer::Customer(float arrivalTime) {
+    this->arrivalTime = arrivalTime;
+    startOfServiceTime = -1;
+    departureTime = -1;
+    pqTime = arrivalTime;
+    next = nullptr;
+  }
+
   void Customer::operator=(Customer* rhs) {
     this->arrivalTime = rhs->getAT();
     this->startOfServiceTime = rhs->getSOST();
@@ -30,3 +39,16 @@
   float Customer::getDT() const {return departureTime;}
   float Customer::getPQT() const {return pqTime;}
   Customer* Customer::getNext() const {return next;}
+
+  bool Customer::isArrival() const {
+    if (departureTime == -1) return true;
+    else return false;
+  }
+
+  void Customer::print() const{
+    std::cout << "arrivalTime = " << arrivalTime << std::endl;
+    std::cout << "startOfServiceTime = " << startOfServiceTime << std::endl;
+    std::cout << "departureTime = " << departureTime << std::endl;
+    std::cout << "pqTime = " << pqTime << std::endl;
+  }
+  

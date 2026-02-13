@@ -1,5 +1,6 @@
 #include <iostream>
 #include "sim.hpp"
+#include "stats.hpp"
 using namespace std;
 int testQueues();
 void testSim();
@@ -51,12 +52,12 @@ int testQueues() {
   return 100;
 }
 void testSim() {
-  Simulator* sim1 = new Simulator();
-  Simulator* sim2 = new Simulator();
-  sim1->load(FILE1);
-  sim2->load(FILE2);
-  sim1->print();
-  sim2->print();
-  delete sim1;
-  delete sim2;
+  Simulator* sim = new Simulator();
+  sim->load(FILE1);
+  cout << "********Before running**********" << endl;
+  sim->print();
+  sim->run();
+  cout << "********After running**********" << endl;
+  sim->print();
+  delete sim;
 }

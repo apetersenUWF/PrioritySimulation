@@ -17,7 +17,7 @@ class MinHeap{
   MinHeap();
   MinHeap(int capacity);
   ~MinHeap();
-  void insert(Customer* customerToInsert);
+  bool insert(Customer* customerToInsert);
   Customer* serve();
   bool isEmpty() const;
   float retrieve() const;

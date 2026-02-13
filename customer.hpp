@@ -9,6 +9,7 @@ class Customer{
   public:
   Customer();
   Customer(const Customer* rhs);
+  Customer(float arrivalTime);
   void operator=(Customer* rhs);
 
   void setAT(float AT);
@@ -21,5 +22,9 @@ class Customer{
   float getDT() const;
   float getPQT() const;
   Customer* getNext() const;
+
+  bool isArrival() const;
+
+  void print() const;
 };
 #endif

@@ -18,11 +18,12 @@
   MinHeap::~MinHeap() {
     for (int i = 0; i < size; i++) delete priorityQueue.at(i);
   }
-  void MinHeap::insert(Customer* customerToInsert) {
-    if (size == capacity) return;//PQ full
+  bool MinHeap::insert(Customer* customerToInsert) {
+    if (size >= capacity) return false;//PQ full
     priorityQueue.at(size) = customerToInsert;
     percolateUp(size);
     size++;
+    return true;
   }
 
   Customer* MinHeap::serve() {
@@ -62,11 +63,11 @@
         int rChildIndex = RChild(index);
         float rChild = priorityQueue.at(rChildIndex)->getPQT();
         if (curr < lChild && curr < rChild) return;//curr has higher priority than its children
-        if (lChild < rChild) {
+        if (lChild < rChild) {//left child has highest priority among the 3
           swap(index, lChildIndex);
           index = lChildIndex;
         }
-        else {
+        else {//right child must have highest priority
           swap(index, rChildIndex);
           index = rChildIndex;
         }
