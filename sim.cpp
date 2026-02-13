@@ -7,7 +7,6 @@
     mu = 0;
     M = 0;
     EVENTS_TO_SIMULATE = 0;
-    currTime = 0.0;
     lastDepartureTime = 0.0;
     serversAvailable = 0;
     minHeap = new MinHeap();
@@ -16,7 +15,7 @@
   Simulator::~Simulator() {
     delete minHeap;
     delete queue;
-    for (int i = 0; i < processedCustomers.size(); i++) {
+    for (long unsigned int i = 0; i < processedCustomers.size(); i++) {
       delete processedCustomers.at(i);
     }
   }
@@ -25,22 +24,14 @@
     std::cout << "mu = " << mu << std::endl;
     std::cout << "M = " << M << std::endl;
     std::cout << "EVENTS_TO_SIMULATE = " << EVENTS_TO_SIMULATE << std::endl;
-    std::cout << "currTime = " << currTime << std::endl;
     std::cout << "lastDepartureTime = " << lastDepartureTime << std::endl;
     std::cout << "serversAvailable = " << serversAvailable << std::endl;
     std::cout << "processedCustomers = " << std::endl;
-    for (int i = 0; i < processedCustomers.size(); i++) {
+    for (long unsigned int i = 0; i < processedCustomers.size(); i++) {
       processedCustomers.at(i)->print();
     }
     if (!queue->isEmpty()) std::cout << "-1" << std::endl;
     if (!minHeap->isEmpty()) std::cout << "-2" << std::endl;
-  }
-  Customer* Simulator::getNextCustomer(const float currTime) const {
-    float interval = getNextRandomInterval(lambda);
-    Customer* arrival = new Customer();
-    arrival->setAT(currTime+interval);
-    arrival->setPQT(currTime+interval);
-    return arrival;
   }
   bool Simulator::load(const std::string& filename){
     std::ifstream inFS;
@@ -75,29 +66,30 @@
     }
   }
   void Simulator::run() {
-  serversAvailable = M;//set all servers to be free
+    float customerArrivalTime = 0.0;
+    serversAvailable = M;//set all servers to be free
     float interval = getNextRandomInterval(lambda);//find time for first customer
-    currTime += interval;
-    lastDepartureTime = currTime;//initialize the last departure time for later use
+    customerArrivalTime += interval;
+    lastDepartureTime = customerArrivalTime;//initialize the last departure time for later use
     while (serversAvailable > 0) {//insert the first customer arrivals into the pq
-      Customer* curr = new Customer(currTime);//generate a new customer with arrival and pqtime equal to what was generated
-      curr->setSOST(currTime);//since servers are free these customers start immediately
+      Customer* curr = new Customer(customerArrivalTime);//generate a new customer with arrival and pqtime equal to what was generated
+      curr->setSOST(customerArrivalTime);//since servers are free these customers start immediately
       minHeap->insert(curr);//insert into the pq as an arrival event to be processed
       interval = getNextRandomInterval(lambda);
-      currTime += interval;//accumulate time
+      customerArrivalTime += interval;//accumulate time
       serversAvailable--;
       EVENTS_TO_SIMULATE--;
     }
     while (EVENTS_TO_SIMULATE > 0) {
-      Customer* curr = new Customer(currTime);//generate all the remaining customer arrivals from the arrival distribution times
+      Customer* curr = new Customer(customerArrivalTime);//generate all the remaining customer arrivals from the arrival distribution times
       queue->insert(curr);//insert these into the fifo queue, guaranteed to be in order from how time is accumulated
       interval = getNextRandomInterval(lambda);
-      currTime += interval;
+      customerArrivalTime += interval;
       EVENTS_TO_SIMULATE--;
     }
     while (!queue->isEmpty() || !minHeap->isEmpty()) {//while some customers still exist in either the pq or fifo, keep looping
       processNextEvent();
-      if (serversAvailable > 0 && !queue->isEmpty()) {//if a server was just freed
+      if (serversAvailable > 0 && !queue->isEmpty()) {//if a server was just freed and customers are still in the queue
         Customer* firstInLine = queue->pop();//pop from fifo and save the result
         if (firstInLine->getAT() > lastDepartureTime) firstInLine->setSOST(firstInLine->getAT());//if this customer arrived after the last departure, start service at arrival time
         else firstInLine->setSOST(lastDepartureTime);//else, the customer arrived before the server was free, so set start of service to be the time of the last persons departure

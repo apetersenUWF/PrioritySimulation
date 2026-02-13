@@ -11,13 +11,11 @@ class Simulator{
   int mu;
   int M;
   int EVENTS_TO_SIMULATE;
-  float currTime;
   float lastDepartureTime;
   int serversAvailable;
   MinHeap* minHeap;
   Queue* queue;
   std::vector<Customer*> processedCustomers;
-  Customer* getNextCustomer(const float currTime) const;
   void processNextEvent();
   public:
   Simulator();
