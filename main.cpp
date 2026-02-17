@@ -54,10 +54,9 @@ int testQueues() {
 void testSim() {
   Simulator* sim = new Simulator();
   sim->load(FILE1);
-  cout << "********Before running**********" << endl;
-  sim->print();
   sim->run();
-  cout << "********After running**********" << endl;
-  sim->print();
   delete sim;
+  sim = new Simulator();
+  sim->load(FILE2);
+  sim->run();
 }

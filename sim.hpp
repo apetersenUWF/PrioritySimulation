@@ -16,6 +16,7 @@ class Simulator{
   Queue* queue;
   Customer* currEvent;
   std::vector<Customer*> processedCustomers;
+  void processNextEvent();
 //STATISTICS
   float eventTime;
   float lastEventTime;
@@ -26,20 +27,27 @@ class Simulator{
   float totalServiceTime;
   float totalQueueTime;
   float idleTime;
-  float runningTotals[20];
-  float queueRunningTotals[20];
+  float runningTotals[50];//assumes no more than 49 customers will be in the system at once
+  float queueRunningTotals[50];//assumes no more than 49 customers will be in the queue at once
+
+  float Po;
+  float L;
+  float W;
+  float Lq;
+  float Wq;
+  float Rho;
 
   //stats
 
-  void processNextEvent();
   void processStatistics();
   void accumulateIdleTime();
   void accumulateRunningTotals();
+
   public:
   Simulator();
   ~Simulator();
   bool load(const std::string& filename);
   void run();
-  void print() const; //for testing purposes
+  void print() const;
 };
 #endif
