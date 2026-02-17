@@ -7,10 +7,15 @@
     mu = 0;
     M = 0;
     EVENTS_TO_SIMULATE = 0;
-    lastDepartureTime = 0.0;
     serversAvailable = 0;
+    eventTime = 0.0;
+    lastEventTime = 0.0;
+    customersInSystem = 0.0;
+    totalTime = 0.0;
+    idleTime = 0.0;
     minHeap = new MinHeap();
     queue = new Queue();
+    currEvent = nullptr;
   }
   Simulator::~Simulator() {
     delete minHeap;
@@ -24,12 +29,25 @@
     std::cout << "mu = " << mu << std::endl;
     std::cout << "M = " << M << std::endl;
     std::cout << "EVENTS_TO_SIMULATE = " << EVENTS_TO_SIMULATE << std::endl;
-    std::cout << "lastDepartureTime = " << lastDepartureTime << std::endl;
     std::cout << "serversAvailable = " << serversAvailable << std::endl;
-    std::cout << "processedCustomers = " << std::endl;
-    for (long unsigned int i = 0; i < processedCustomers.size(); i++) {
-      processedCustomers.at(i)->print();
+    std::cout << "Po " << (idleTime/totalTime)*100 << "%" << std::endl;
+    float avgInSystem = 0.0;
+    for (int i = 0; i < 20; i++) {
+      float x = i * runningTotals[i];
+      avgInSystem += x;
     }
+    float avgInQueue = 0.0;
+    for (int i = 0; i < 20; i++) {
+      float x = i * queueRunningTotals[i];
+      avgInQueue += x;
+    }
+    avgInSystem /= totalTime;
+    avgInQueue /= totalTime;
+    std::cout << "L = " << avgInSystem << std::endl;
+    std::cout << "W = " << totalTimeInSystem/EVENTS_TO_SIMULATE << std::endl;
+    std::cout << "Lq = " << avgInQueue << std::endl;
+    std::cout << "Wq = " << totalQueueTime/EVENTS_TO_SIMULATE << std::endl;
+    std::cout << "Rho = " << totalServiceTime/(totalTime*M) << std::endl;
     if (!queue->isEmpty()) std::cout << "-1" << std::endl;
     if (!minHeap->isEmpty()) std::cout << "-2" << std::endl;
   }
@@ -49,52 +67,89 @@
     inFS.close();
     return true;
   }
-  void Simulator::processNextEvent() {
-    Customer* lastServed = minHeap->serve();//save the result of the most recent service
-    //can be either an arrival or departure of a customer
-    if (lastServed->isArrival()) {//if the last service was an arrival event
-      float interval = getNextRandomInterval(mu);//generate the time length of the service
-      float departureTime = (lastServed->getSOST())+interval;//generate the time of the departure based on the interval
-      lastServed->setDT(departureTime);
-      lastServed->setPQT(departureTime);//set the pqtime to prioritize based upon the departure time, because this customer arrival has already been processed
-      minHeap->insert(lastServed);//reinsert this customer as a future departure event, with the generated departure time
-    }
-    else {//event is a departure
-      serversAvailable++;//free up a server
-      lastDepartureTime = lastServed->getDT();//save the time at which the server became free
-      processedCustomers.push_back(lastServed);//save this customer data for analysis
-    }
-  }
+  
   void Simulator::run() {
     float customerArrivalTime = 0.0;
+    float interval = getNextRandomInterval(lambda);
+    int i = 0;//event counter
     serversAvailable = M;//set all servers to be free
-    float interval = getNextRandomInterval(lambda);//find time for first customer
     customerArrivalTime += interval;
-    lastDepartureTime = customerArrivalTime;//initialize the last departure time for later use
-    while (serversAvailable > 0) {//insert the first customer arrivals into the pq
-      Customer* curr = new Customer(customerArrivalTime);//generate a new customer with arrival and pqtime equal to what was generated
-      curr->setSOST(customerArrivalTime);//since servers are free these customers start immediately
-      minHeap->insert(curr);//insert into the pq as an arrival event to be processed
+    while (minHeap->getSize() < DEFAULT_MINHEAP_CAPACITY && i < EVENTS_TO_SIMULATE) {
+      Customer* curr = new Customer(customerArrivalTime);
+      minHeap->insert(curr);
       interval = getNextRandomInterval(lambda);
       customerArrivalTime += interval;//accumulate time
-      serversAvailable--;
-      EVENTS_TO_SIMULATE--;
+      i++;
     }
-    while (EVENTS_TO_SIMULATE > 0) {
-      Customer* curr = new Customer(customerArrivalTime);//generate all the remaining customer arrivals from the arrival distribution times
-      queue->insert(curr);//insert these into the fifo queue, guaranteed to be in order from how time is accumulated
-      interval = getNextRandomInterval(lambda);
-      customerArrivalTime += interval;
-      EVENTS_TO_SIMULATE--;
-    }
-    while (!queue->isEmpty() || !minHeap->isEmpty()) {//while some customers still exist in either the pq or fifo, keep looping
+    while (!minHeap->isEmpty()) {
       processNextEvent();
-      if (serversAvailable > 0 && !queue->isEmpty()) {//if a server was just freed and customers are still in the queue
-        Customer* firstInLine = queue->pop();//pop from fifo and save the result
-        if (firstInLine->getAT() > lastDepartureTime) firstInLine->setSOST(firstInLine->getAT());//if this customer arrived after the last departure, start service at arrival time
-        else firstInLine->setSOST(lastDepartureTime);//else, the customer arrived before the server was free, so set start of service to be the time of the last persons departure
-        minHeap->insert(firstInLine);//insert this customer arrival event into the pq
+        if(i < EVENTS_TO_SIMULATE && minHeap->getSize() <= M+1) {
+          Customer* curr = new Customer(customerArrivalTime);
+          minHeap->insert(curr);
+          interval = getNextRandomInterval(lambda);
+          customerArrivalTime += interval;//accumulate time
+          i++;
+        }
+    }
+    totalTime = currEvent->getDT();
+  }
+
+  void Simulator::accumulateIdleTime() {
+    idleTime += (eventTime - lastEventTime);//last event mustve been a departure for all servers to be free
+  }
+  //void processStatistics() {}
+    
+  void Simulator::accumulateRunningTotals() {
+    float duration = eventTime - lastEventTime;//calculate duration of the previous state
+    runningTotals[customersInSystem] += duration;
+    if (currEvent->isArrival()) {
+        customersInSystem++; 
+    } else {
+        customersInSystem--;
+        totalTimeInSystem += (eventTime - currEvent->getAT());
+    }
+  }
+
+  void Simulator::processNextEvent() {
+    currEvent = minHeap->serve();//update the current event being processed
+    lastEventTime = eventTime;
+    eventTime = currEvent->getPQT();
+    //can be either an arrival or departure of a customer
+    if (currEvent->isArrival()) {
+      accumulateRunningTotals();
+      if (serversAvailable > 0) {
+        if (serversAvailable == M) accumulateIdleTime();//if someone just arrived while all servers were available, we have lastDT and lastAT to calculate idleTime
         serversAvailable--;
+        currEvent->setSOST(currEvent->getAT());
+        float serviceTime = getNextRandomInterval(mu);
+        float departureTime = currEvent->getSOST() + serviceTime;
+        currEvent->setDT(departureTime);
+        currEvent->setPQT(departureTime);
+        minHeap->insert(currEvent);
+        totalServiceTime += serviceTime;
+      }
+      else {
+        queueRunningTotals[queue->getSize()] += currEvent->getAT() - lastQueueChange;
+        queue->insert(currEvent);//if most recent event was an arrival but no servers available, put in line
+        lastQueueChange = currEvent->getAT();
+      }
+    }
+    else {//event is a departure
+      accumulateRunningTotals();
+      serversAvailable++;//free up a server
+      if (!queue->isEmpty()) {//if someone is waiting in line as an arrival
+        queueRunningTotals[queue->getSize()] += currEvent->getDT() - lastQueueChange;
+        Customer* frontOfQueue = queue->pop();//pull them from the queue, insert their departure event
+        frontOfQueue->setSOST(currEvent->getDT());
+        totalQueueTime += frontOfQueue->getSOST() - frontOfQueue->getAT();
+        float serviceTime = getNextRandomInterval(mu);
+        float departureTime = frontOfQueue->getSOST() + serviceTime;
+        frontOfQueue->setDT(departureTime);
+        frontOfQueue->setPQT(departureTime);
+        minHeap->insert(frontOfQueue);
+        lastQueueChange = frontOfQueue->getSOST();
+        serversAvailable--;
+        totalServiceTime += serviceTime;
       }
     }
   }

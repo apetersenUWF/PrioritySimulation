@@ -1,7 +1,7 @@
 #include "queue.hpp"
 
-  Queue::Queue(): front(nullptr), back(nullptr) {}
-  Queue::Queue(Customer* customer): front(customer), back(customer) {}
+  Queue::Queue(): front(nullptr), back(nullptr), size(0) {}
+  Queue::Queue(Customer* customer): front(customer), back(customer), size(0) {}
   Queue::~Queue() {
     while (front) {
       Customer* curr = front->getNext();
@@ -10,18 +10,18 @@
     }
   }
   Customer* Queue::pop() {
-    Customer* curr = front;
-    Customer* exitingCustomer = new Customer(curr);//saves the current customer for returning
-    if (curr != nullptr) {//if front isnt nullptr, assign its next node as the new front
-      delete front;
-      front = curr->getNext();
-    }
-    if (front == nullptr) back = front;//if front is now nullptr or if it was an empty list, it was the only node, also reassign back
-    return exitingCustomer;
+    if (front == nullptr) return nullptr;
+    size--;
+    Customer* curr = new Customer(front);//saves the current customer for returning
+    delete front;
+    front = curr->getNext();
+    if (front == nullptr) back = front;//if front is now nullptr, it was the only node, also reassign back
+    return curr;
   }
   Customer* Queue::peek() const {return front;}
 
   void Queue::insert(Customer* customerToInsert) {
+    size++;
     if (isEmpty()) {
       front = back = customerToInsert;
       return;
@@ -33,4 +33,4 @@
     if (front == nullptr) return true;
     else return false;
   }
-
+  int Queue::getSize() const {return size;}

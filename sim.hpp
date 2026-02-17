@@ -11,12 +11,30 @@ class Simulator{
   int mu;
   int M;
   int EVENTS_TO_SIMULATE;
-  float lastDepartureTime;
   int serversAvailable;
   MinHeap* minHeap;
   Queue* queue;
+  Customer* currEvent;
   std::vector<Customer*> processedCustomers;
+//STATISTICS
+  float eventTime;
+  float lastEventTime;
+  float lastQueueChange;
+  int customersInSystem;
+  float totalTime;
+  float totalTimeInSystem;
+  float totalServiceTime;
+  float totalQueueTime;
+  float idleTime;
+  float runningTotals[20];
+  float queueRunningTotals[20];
+
+  //stats
+
   void processNextEvent();
+  void processStatistics();
+  void accumulateIdleTime();
+  void accumulateRunningTotals();
   public:
   Simulator();
   ~Simulator();

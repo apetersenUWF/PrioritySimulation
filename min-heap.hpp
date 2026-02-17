@@ -20,6 +20,7 @@ class MinHeap{
   bool insert(Customer* customerToInsert);
   Customer* serve();
   bool isEmpty() const;
+  int getSize() const;
   float retrieve() const;
   void print() const; //for testing
 };

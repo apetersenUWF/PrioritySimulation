@@ -95,4 +95,6 @@
         std::cout << "null" << std::endl;
     }
   }
+
+  int MinHeap::getSize() const {return size;}
   

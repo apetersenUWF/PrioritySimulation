@@ -4,6 +4,7 @@
 class Queue{
   Customer* front;
   Customer* back;
+  int size;
   public:
   Queue();
   Queue(Customer* customer);
@@ -12,5 +13,6 @@ class Queue{
   Customer* peek() const;
   void insert(Customer* customerToInsert);
   bool isEmpty() const;
+  int getSize() const;
 };
 #endif
