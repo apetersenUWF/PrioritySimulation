@@ -39,7 +39,7 @@ class Simulator{
 
   //stats
 
-  void processStatistics();
+  void processSimulationStatistics();
   void accumulateIdleTime();
   void accumulateRunningTotals();
 

@@ -26,7 +26,7 @@
         }
     }
     totalTime = currEvent->getDT();
-    processStatistics();
+    processSimulationStatistics();
     print();
   }
   void Simulator::processNextEvent() {
@@ -105,15 +105,22 @@
       delete processedCustomers.at(i);
     }
   }
-  void Simulator::print() const{//for testing purposes
-    std::cout << "Results of the simulation:" << std::endl;
-    std::cout << "--------------------------" << std::endl;
-    std::cout << "Po = " << Po << std::endl;
-    std::cout << "L = " << L << std::endl;
-    std::cout << "W = " << W << std::endl;
-    std::cout << "Lq = " << Lq << std::endl;
-    std::cout << "Wq = " << Wq << std::endl;
-    std::cout << "Rho = " << Rho << std::endl;
+  void Simulator::print() const{
+    StatisticsData calcVals = getStatistics(lambda, mu, M);
+    float Po_error = percentError(Po, calcVals.Po);
+    float L_error = percentError(L, calcVals.L);
+    float W_error = percentError(W, calcVals.W);
+    float Lq_error = percentError(Lq, calcVals.Lq);
+    float Wq_error = percentError(Wq, calcVals.Wq);
+    float Rho_error = percentError(Rho, calcVals.Rho);
+    printf("Results of the simulation:\n");
+    printf("%12s %12s %15s\n", "Simulated", "Calculated", "Percent Error");
+    printf("Po  %0.4f       %0.4f          %0.2f\n", Po, calcVals.Po, Po_error);
+    printf("L   %0.4f       %0.4f          %0.2f\n", L, calcVals.L, L_error);
+    printf("W   %0.4f       %0.4f          %0.2f\n", W, calcVals.W, W_error);
+    printf("Lq  %0.4f       %0.4f          %0.2f\n", Lq, calcVals.Lq, Lq_error);
+    printf("Wq  %0.4f       %0.4f          %0.2f\n", Wq, calcVals.Wq, Wq_error);
+    printf("Rho %0.4f       %0.4f          %0.2f\n", Rho, calcVals.Rho, Rho_error);
   }
 
   bool Simulator::load(const std::string& filename){
@@ -148,7 +155,7 @@
     }
   }
 
-  void Simulator::processStatistics() {
+  void Simulator::processSimulationStatistics() {
     Po = idleTime/totalTime;
     for (int i = 0; i < 50; i++) {
       float x = i * runningTotals[i];
