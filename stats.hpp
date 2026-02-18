@@ -13,5 +13,6 @@ struct StatisticsData {
 float getRandomFloat(const float a = RANDOM_FLOAT_LB, const float b = RANDOM_FLOAT_UB);
 float getNextRandomInterval(const int avg);
 float percentError(const float meas, const float expected);
-StatisticsData getStatistics (const int lambda, const int mu, const int M);
+long long fact(const int input);
+StatisticsData getStatistics (const float lambda, const float mu, const float M);
 #endif

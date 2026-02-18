@@ -51,24 +51,25 @@
         queueRunningTotals[queue->getSize()] += currEvent->getAT() - lastQueueChange;
         queue->insert(currEvent);//if most recent event was an arrival but no servers available, put in line
         lastQueueChange = currEvent->getAT();
+        customersWithWaitTime++;
       }
     }
     else {//event is a departure
       accumulateRunningTotals();
+      totalQueueTime += (currEvent->getSOST() - currEvent->getAT());//keep running total of queue time waited
       serversAvailable++;//free up a server
       if (!queue->isEmpty()) {//if someone is waiting in line as an arrival
         queueRunningTotals[queue->getSize()] += currEvent->getDT() - lastQueueChange;
         Customer* frontOfQueue = queue->pop();//pull them from the queue, insert their departure event
-        frontOfQueue->setSOST(currEvent->getDT());
+        frontOfQueue->setSOST(currEvent->getDT());//set start of service as the last customers departure
         float serviceTime = getNextRandomInterval(mu);
-        float departureTime = frontOfQueue->getSOST() + serviceTime;
+        float departureTime = frontOfQueue->getSOST() + serviceTime;//calculate departure time
         frontOfQueue->setDT(departureTime);
-        frontOfQueue->setPQT(departureTime);
-        minHeap->insert(frontOfQueue);
-        lastQueueChange = frontOfQueue->getSOST();
-        totalQueueTime += frontOfQueue->getSOST() - frontOfQueue->getAT();
-        totalServiceTime += serviceTime;
-        serversAvailable--;
+        frontOfQueue->setPQT(departureTime);//set this as a departure event
+        minHeap->insert(frontOfQueue);//place into the PQ
+        lastQueueChange = frontOfQueue->getSOST();//save the last time that the queue size changed
+        totalServiceTime += serviceTime;//keep running total of service time
+        serversAvailable--;//remove a server since service started
       }
     }
   }
@@ -80,6 +81,7 @@
     serversAvailable = 0;
     //STATISTICS
     customersInSystem = 0;
+    customersWithWaitTime = 0;
     eventTime = 0.0;
     lastEventTime = 0.0;
     lastQueueChange = 0.0;
@@ -88,12 +90,11 @@
     totalServiceTime = 0.0;
     totalQueueTime = 0.0;
     idleTime = 0.0;
+    chanceOfWaiting = 0.0;
     Po = 0.0;
-    L = 0.0;
     W = 0.0;
-    Lq = 0.0;
     Wq = 0.0;
-    Rho = 0.0;
+    Rho = 0.0;              
     minHeap = new MinHeap();
     queue = new Queue();
     currEvent = nullptr;
@@ -106,21 +107,20 @@
     }
   }
   void Simulator::print() const{
-    StatisticsData calcVals = getStatistics(lambda, mu, M);
+    StatisticsData calcVals = getStatistics(static_cast<float>(lambda), static_cast<float>(mu), static_cast<float>(M));
     float Po_error = percentError(Po, calcVals.Po);
-    float L_error = percentError(L, calcVals.L);
     float W_error = percentError(W, calcVals.W);
-    float Lq_error = percentError(Lq, calcVals.Lq);
     float Wq_error = percentError(Wq, calcVals.Wq);
     float Rho_error = percentError(Rho, calcVals.Rho);
     printf("Results of the simulation:\n");
     printf("%12s %12s %15s\n", "Simulated", "Calculated", "Percent Error");
-    printf("Po  %0.4f       %0.4f          %0.2f\n", Po, calcVals.Po, Po_error);
-    printf("L   %0.4f       %0.4f          %0.2f\n", L, calcVals.L, L_error);
-    printf("W   %0.4f       %0.4f          %0.2f\n", W, calcVals.W, W_error);
-    printf("Lq  %0.4f       %0.4f          %0.2f\n", Lq, calcVals.Lq, Lq_error);
-    printf("Wq  %0.4f       %0.4f          %0.2f\n", Wq, calcVals.Wq, Wq_error);
-    printf("Rho %0.4f       %0.4f          %0.2f\n", Rho, calcVals.Rho, Rho_error);
+    printf("Po  %-5.4f       %-5.4f        %-5.2f%%\n", Po, calcVals.Po, Po_error);
+    printf("L     N/A        %-5.4f         N/A\n", calcVals.L);
+    printf("W   %-5.4f       %-5.4f        %-5.2f%%\n", W, calcVals.W, W_error);
+    printf("Lq    N/A        %-5.4f         N/A\n", calcVals.Lq);
+    printf("Wq  %-5.4f       %-5.4f        %-5.2f%%\n", Wq, calcVals.Wq, Wq_error);
+    printf("Rho %-5.4f       %-5.4f        %-5.2f%%\n", Rho, calcVals.Rho, Rho_error);
+    printf("Overall chance of having to wait -> %-5.2f%%\n", chanceOfWaiting);
   }
 
   bool Simulator::load(const std::string& filename){
@@ -157,17 +157,18 @@
 
   void Simulator::processSimulationStatistics() {
     Po = idleTime/totalTime;
-    for (int i = 0; i < 50; i++) {
+    /*for (int i = 0; i < 50; i++) {
       float x = i * runningTotals[i];
       L += x;
     }
-    L /= totalTime;
+    L /= totalTime;*/
     W = totalTimeInSystem/EVENTS_TO_SIMULATE;
-    for (int i = 0; i < 50; i++) {
+    /*for (int i = 0; i < 50; i++) {
       float x = i * queueRunningTotals[i];
       Lq += x;
     }
-    Lq /= totalTime;
+    Lq /= totalTime;*/
     Wq = totalQueueTime/EVENTS_TO_SIMULATE;
     Rho = totalServiceTime/(totalTime*M);
+    chanceOfWaiting = (static_cast<float>(customersWithWaitTime)/EVENTS_TO_SIMULATE)*100;
   }

@@ -18,10 +18,11 @@ class Simulator{
   std::vector<Customer*> processedCustomers;
   void processNextEvent();
 //STATISTICS
+  int customersInSystem;
+  int customersWithWaitTime;
   float eventTime;
   float lastEventTime;
   float lastQueueChange;
-  int customersInSystem;
   float totalTime;
   float totalTimeInSystem;
   float totalServiceTime;
@@ -31,11 +32,10 @@ class Simulator{
   float queueRunningTotals[50];//assumes no more than 49 customers will be in the queue at once
 
   float Po;
-  float L;
   float W;
-  float Lq;
   float Wq;
   float Rho;
+  float chanceOfWaiting;
 
   //stats
 
