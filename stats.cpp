@@ -1,7 +1,16 @@
+/***************************************************************
+  Ayden Petersen
+  stats.cpp
+  Project 2
+
+  This file contains implementations of the statistics methods 
+  we will use to run the simulation and process the data
+***************************************************************/
+
 #include <cmath>
 #include <random>
 #include "stats.hpp"
-float getRandomFloat(const float a, const float b) {
+float getRandomFloat(const float a, const float b) {//calculates a random float on the interval (a, b]
   std::random_device randomDevice;
   std::mt19937 generator(randomDevice());//uses the mersene twister engine for fast random numbers
   std::uniform_real_distribution<> distr(a, b);//defines the range from (a,b])
@@ -9,19 +18,19 @@ float getRandomFloat(const float a, const float b) {
   return randomFloat;
 }
 
-float getNextRandomInterval(const int avg) {
+float getNextRandomInterval(const int avg) {//calculates a random interval given the average number of events that occur in 1 time unit
   float randomFloat = getRandomFloat();
   float interval = -1 * (1.0/avg) * log(randomFloat); // natural logarithm of the random float
   return interval;
 }
-float percentError(const float meas, const float expected) {return ((meas-expected)/expected)*100;}
-long long fact(const int input) {
+float percentError(const float meas, const float expected) {return ((meas-expected)/expected)*100;}//calculates % error
+long long fact(const int input) {//calculkate the factorial of a positive number
   if (input == 0) return 1;
   long long fact = input;
   for (int i = input-1; i > 0; i--) fact *= i;
   return fact;
 }
-StatisticsData getStatistics(const float lambda, const float mu, const float M) {
+StatisticsData getStatistics(const float lambda, const float mu, const float M) {//calculates statistics predicted by the analytical model
   StatisticsData data;
   float c1 = 0.0;
   float c2 = 0.0;

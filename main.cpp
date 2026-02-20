@@ -10,7 +10,7 @@ int main() {
   return 0;
 }
 
-int testQueues() {
+int testQueues() {//runs some tests for the fifo and pq
   Queue* fifo = new Queue();
   MinHeap* minHeap = new MinHeap();
   const int tests_count = 100;
